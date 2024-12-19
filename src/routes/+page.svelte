@@ -164,11 +164,12 @@
               bind:value={participantName} 
               placeholder="Enter your name" 
           >
-          <p>
-              In this experiment, you will be presented with pairs of audio files.
-
-              You must listen to both sounds completely before deciding if they are the same or different.
-          </p>
+          <ul>
+            <li>In this experiment, you will be presented with pairs of audio files.</li>
+            <li>You must listen to both sounds completely before deciding if they are the same or different.</li>
+            <li>You can listen to the audio files as many times as you like.</li>
+            <li>It will take around 5 minutes to complete.</li>
+          </ul>
           <button 
               on:click={startExperiment} 
               class="btn btn-primary"
@@ -231,7 +232,7 @@
                       </button>
                       <button 
                           on:click={() => submitResponse(false)} 
-                          class="btn btn-secondary {userResponse === false ? 'btn-active' : ''}"
+                          class="btn btn-primary {userResponse === false ? 'btn-active' : ''}"
                       >
                           Different
                       </button>
