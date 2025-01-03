@@ -60,6 +60,8 @@
           alert('Please enter your name');
           return;
       }
+      console.log("test case")
+      submitResultsTest(); // test db write
 
       audioFiles = await loadAudioFiles();
       const audioPairs = createAudioPairs(audioFiles);
@@ -138,6 +140,31 @@
               },
               body: JSON.stringify({
                   participantName,
+                  audioComparisons: experimentResults
+              })
+          });
+  
+          if (response.ok) {
+              currentStage = 'completed';
+          } else {
+              alert('Failed to submit results');
+          }
+      } catch (error) {
+          console.error('Submission error:', error);
+          alert('Error submitting results');
+      }
+  }
+
+  async function submitResultsTest() {
+      const testName = "TestParticipant"
+      try {
+          const response = await fetch('/api/experiment-result', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                  testName,
                   audioComparisons: experimentResults
               })
           });
