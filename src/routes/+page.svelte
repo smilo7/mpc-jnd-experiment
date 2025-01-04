@@ -60,8 +60,6 @@
           alert('Please enter your name');
           return;
       }
-    //   console.log("test case")
-    //   submitResultsTest(); // test db write
 
       audioFiles = await loadAudioFiles();
       const audioPairs = createAudioPairs(audioFiles);
@@ -154,31 +152,6 @@
           alert('Error submitting results');
       }
   }
-
-//   async function submitResultsTest() {
-//       const testName = "TestParticipant"
-//       try {
-//           const response = await fetch('/api/experiment-result', {
-//               method: 'POST',
-//               headers: {
-//                   'Content-Type': 'application/json'
-//               },
-//               body: JSON.stringify({
-//                   participantName: testName,
-//                   audioComparisons: experimentResults
-//               })
-//           });
-  
-//           if (response.ok) {
-//               currentStage = 'completed';
-//           } else {
-//               alert('Failed to submit results');
-//           }
-//       } catch (error) {
-//           console.error('Submission error:', error);
-//           alert('Error submitting results');
-//       }
-//   }
 </script>
 
 <main class="container">
@@ -194,7 +167,7 @@
           <ul>
             <li>In this experiment, you will be presented with pairs of audio files.</li>
             <li>You must listen to both sounds completely before deciding if they are the same or different.</li>
-            <li>You can listen to the audio files as many times as you like.</li>
+            <li>You can listen to the audio files as many times as you like and in any order. We strongly reccomend doing this.</li>
             <li>It will take around 5 minutes to complete.</li>
           </ul>
           <button 
