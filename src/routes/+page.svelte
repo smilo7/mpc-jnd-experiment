@@ -164,7 +164,7 @@
                   'Content-Type': 'application/json'
               },
               body: JSON.stringify({
-                  testName,
+                  participantName: testName,
                   audioComparisons: experimentResults
               })
           });
