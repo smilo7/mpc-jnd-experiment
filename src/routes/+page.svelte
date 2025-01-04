@@ -5,7 +5,14 @@
   let audioFiles: string[] = [];
   let currentPairIndex = 0;
   let currentPair: { file1: string, file2: string } | null = null;
-  let experimentResults: Array<{ audioFile1: string, audioFile2: string, isSame: boolean }> = [];
+  let currentPlayCounts = { file1: 0, file2: 0 };
+  let experimentResults: Array<{
+    audioFile1: string,
+    audioFile2: string,
+    isSame: boolean,
+    playCountFile1: number,
+    playCountFile2: number
+  }> = [];
   let totalPairs = 0;
   let completedPairs = 0;
 
@@ -148,36 +155,47 @@
       userResponse = isSame;
   }
 
-  // Confirm and move to next pair
-  function confirmResponse() {
-      if (!currentPair || userResponse === null) return;
-  
-      experimentResults.push({
-          audioFile1: currentPair.file1,
-          audioFile2: currentPair.file2,
-          isSame: userResponse
-      });
-  
-      completedPairs++;
-      currentPairIndex++;
-
-      if (currentPairIndex >= experimentPairs.length) {
-          submitResults();
-          return;
-      }
-  
-      // Reset for next pair
-      player1Listened = false;
-      player2Listened = false;
-      canCompare = false;
-      userResponse = null;
-  
-      // Set up next pair
-      currentPair = experimentPairs[currentPairIndex];
-      audioPlayer1.src = `/audio/${currentPair.file1}.wav`;
-      audioPlayer2.src = `/audio/${currentPair.file2}.wav`;
+  // Update audio play tracking
+  function handlePlay(player: 1 | 2) {
+    if (player === 1) {
+      currentPlayCounts.file1++;
+    } else {
+      currentPlayCounts.file2++;
+    }
   }
 
+  // Confirm and move to next pair
+  function confirmResponse() {
+    if (!currentPair || userResponse === null) return;
+
+    experimentResults.push({
+      audioFile1: currentPair.file1,
+      audioFile2: currentPair.file2,
+      isSame: userResponse,
+      playCountFile1: currentPlayCounts.file1,
+      playCountFile2: currentPlayCounts.file2
+    });
+
+    completedPairs++;
+    currentPairIndex++;
+
+    if (currentPairIndex >= experimentPairs.length) {
+      submitResults();
+      return;
+    }
+
+    // Reset for next pair
+    player1Listened = false;
+    player2Listened = false;
+    canCompare = false;
+    userResponse = null;
+    currentPlayCounts = { file1: 0, file2: 0 };
+
+    // Set up next pair
+    currentPair = experimentPairs[currentPairIndex];
+    audioPlayer1.src = `/audio/${currentPair.file1}.wav`;
+    audioPlayer2.src = `/audio/${currentPair.file2}.wav`;
+  }
   // Submit results to backend
   async function submitResults() {
       try {
@@ -335,6 +353,7 @@
                   <audio 
                       bind:this={audioPlayer1} 
                       src={`/audio/${currentPair.file1}.wav`}
+                      on:play={() => handlePlay(1)}
                       on:ended={() => handleAudioEnd(1)}
                   ></audio>
                   <button 
@@ -349,6 +368,7 @@
                   <audio 
                       bind:this={audioPlayer2} 
                       src={`/audio/${currentPair.file2}.wav`}
+                      on:play={() => handlePlay(2)}
                       on:ended={() => handleAudioEnd(2)}
                   ></audio>
                   <button 
