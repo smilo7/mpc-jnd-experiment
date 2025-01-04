@@ -37,6 +37,9 @@
   let demoCompleted = false;
   let demoFiles: { file1: string, file2: string } | null = null;
 
+  // For tracking experiment time
+  let startedAt: Date
+
   // Reactive statement for progress
   $: {
       if (totalPairs > 0) {
@@ -122,6 +125,7 @@
 
   // Start experiment
   async function startExperiment() {
+      startedAt = new Date(),
       audioFiles = await loadAudioFiles();
       const audioPairs = createAudioPairs(audioFiles);
       totalPairs = audioPairs.length;
@@ -206,7 +210,9 @@
               },
               body: JSON.stringify({
                   participantName,
-                  audioComparisons: experimentResults
+                  audioComparisons: experimentResults,
+                  startedAt,
+                  completedAt: new Date(),
               })
           });
   

@@ -9,6 +9,7 @@ export interface IExperimentResult extends Document {
     playCountFile1: number;
     playCountFile2: number;
   }>;
+  startedAt: Date;
   completedAt: Date;
 }
 
@@ -23,6 +24,7 @@ const ExperimentResultSchema = new mongoose.Schema<IExperimentResult>({
       playCountFile2: { type: Number, required: true, default: 0 }
     }
   ],
+  startedAt: { type: Date },
   completedAt: { type: Date, default: Date.now },
 });
 
