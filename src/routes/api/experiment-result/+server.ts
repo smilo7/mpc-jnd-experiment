@@ -6,12 +6,14 @@ export async function POST({ request }) {
   try {
     await connectToDatabase(); // Ensure the database is connected
 
-    const { participantName, audioComparisons } = await request.json();
+    const { participantName, headphoneType, audioComparisons, startedAt, completedAt } = await request.json();
 
     const result = await ExperimentResult.create({
       participantName,
+      headphoneType,
       audioComparisons,
-      completedAt: new Date(),
+      startedAt,
+      completedAt,
     });
 
     return json(result, { status: 201 }); // Respond with the created result
