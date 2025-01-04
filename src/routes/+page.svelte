@@ -29,11 +29,33 @@
 
   // Shuffle function
   function shuffleArray<T>(array: T[]): T[] {
-      for (let i = array.length - 1; i > 0; i--) {
+      const newArray = [...array];
+      for (let i = newArray.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
-          [array[i], array[j]] = [array[j], array[i]];
+          [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
       }
-      return array;
+      return newArray;
+  }
+
+  // Create pairs with reference signal, including self-pairing
+  function createAudioPairs(files: string[]) {
+      const referenceSignal = files[0]; // First file is reference
+      const testSignals = files.slice(1); // Rest are test signals
+      const pairs: Array<{ file1: string, file2: string }> = [];
+
+      // Add self-pairing of reference signal (twice for consistency)
+      pairs.push({ file1: referenceSignal, file2: referenceSignal });
+      pairs.push({ file1: referenceSignal, file2: referenceSignal });
+
+      // Create pairs with reference signal and test signals
+      testSignals.forEach(testSignal => {
+          // Add pair in both orders (reference-test and test-reference)
+          pairs.push({ file1: referenceSignal, file2: testSignal });
+          pairs.push({ file1: testSignal, file2: referenceSignal });
+      });
+
+      // Shuffle the pairs to randomize presentation order
+      return shuffleArray(pairs);
   }
 
   // Load audio files
@@ -42,16 +64,8 @@
       const files = Object.keys(context).map(path => 
           path.replace('/static/audio/', '').replace('.wav', '')
       );
-      return shuffleArray(files);
-  }
-
-  // Create audio comparison pairs
-  function createAudioPairs(files: string[]) {
-      const pairs = [];
-      for (let i = 0; i < files.length - 1; i += 2) {
-          pairs.push({ file1: files[i], file2: files[i+1] });
-      }
-      return shuffleArray(pairs);
+      // Don't shuffle the files since we want the first file to be reference
+      return files;
   }
 
   // Start experiment
@@ -73,24 +87,24 @@
       canCompare = false;
       userResponse = null;
       completedPairs = 0;
+
+      // Store pairs for consistent access throughout experiment
+      experimentPairs = audioPairs;
   }
+
+  // Store all pairs to maintain consistency
+  let experimentPairs: Array<{ file1: string, file2: string }> = [];
 
   // Handle audio play tracking
   function handleAudioEnd(player: 1 | 2) {
-      if (player === 1) {
-          player1Listened = true;
-      } else {
-          player2Listened = true;
-      }
-  
-      // Enable comparison if both sounds have been played
+      if (player === 1) player1Listened = true;
+      else player2Listened = true;
       canCompare = player1Listened && player2Listened;
   }
 
   // Handle user response submission
   function submitResponse(isSame: boolean) {
       if (!currentPair) return;
-
       userResponse = isSame;
   }
 
@@ -104,12 +118,10 @@
           isSame: userResponse
       });
   
-      // Move to next pair or complete experiment
-      currentPairIndex++;
       completedPairs++;
+      currentPairIndex++;
 
-      if (currentPairIndex >= createAudioPairs(audioFiles).length) {
-          // submit results when done
+      if (currentPairIndex >= experimentPairs.length) {
           submitResults();
           return;
       }
@@ -121,11 +133,9 @@
       userResponse = null;
   
       // Set up next pair
-      currentPair = createAudioPairs(audioFiles)[currentPairIndex];
+      currentPair = experimentPairs[currentPairIndex];
       audioPlayer1.src = `/audio/${currentPair.file1}.wav`;
       audioPlayer2.src = `/audio/${currentPair.file2}.wav`;
-
-      console.log(currentPairIndex, completedPairs);
   }
 
   // Submit results to backend
