@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { HeadphoneType } from "$lib/models/ExperimentResult";
+
   // State management
   let participantName = '';
   let currentStage: 'intro' | 'demo' | 'experiment' | 'completed' = 'intro';
@@ -39,6 +41,9 @@
 
   // For tracking experiment time
   let startedAt: Date
+
+  // tracking headphone type used by user
+  let headphoneType: HeadphoneType | null = null;
 
   // Reactive statement for progress
   $: {
@@ -93,6 +98,11 @@
           alert('Please enter your name');
           return;
       }
+
+      if (!headphoneType) {
+        alert('Please select your headphone type');
+        return;
+    }
       
       // Load and select random files for demo
       const files = await loadAudioFiles();
@@ -210,6 +220,7 @@
               },
               body: JSON.stringify({
                   participantName,
+                  headphoneType,
                   audioComparisons: experimentResults,
                   startedAt,
                   completedAt: new Date(),
@@ -230,22 +241,66 @@
 
 <main class="container">
   {#if currentStage === 'intro'}
-      <div class="text-center">
-          <h1>Audio Comparison Experiment</h1>
-          <input 
-              type="text" 
-              class="input"
-              bind:value={participantName} 
-              placeholder="Enter your name" 
-          >
-          <p class="mt-4">Welcome to the audio comparison experiment. On the next page you can read the instructions and practice with a small trial page so that you will understand how the experiment will work.</p>
-          <button 
-              on:click={startDemo} 
-              class="btn btn-primary mt-4"
-          >
-              Continue to Demo
-          </button>
+    <div class="text-center">
+      <h1>Audio Comparison Experiment</h1>
+      <p class="mt-4">Welcome to the audio comparison experiment. On the next page you can read the instructions and practice with a small trial page so that you will understand how the experiment will work. Please fill in some short questions below before starting the experiment.</p>
+
+      <div class="mb-6">
+        <input 
+          type="text" 
+          class="input mb-4"
+          bind:value={participantName} 
+          placeholder="Enter your name" 
+        >
+        
+        <div class="headphone-selection">
+          <h3 class="text-lg font-semibold mb-2">Select your headphone type:</h3>
+          <p class="text-sm text-gray-600 mb-4">We recommend using over-ear headphones if you have them available.</p>
+          
+          <div class="flex flex-col gap-2">
+            <label class="flex items-center gap-2">
+              <input 
+                type="radio" 
+                name="headphoneType" 
+                value="over-ear"
+                bind:group={headphoneType}
+                class="radio"
+              >
+              <span>Over-ear headphones</span>
+            </label>
+            
+            <label class="flex items-center gap-2">
+              <input 
+                type="radio" 
+                name="headphoneType" 
+                value="in-ear"
+                bind:group={headphoneType}
+                class="radio"
+              >
+              <span>In-ear headphones</span>
+            </label>
+            
+            <label class="flex items-center gap-2">
+              <input 
+                type="radio" 
+                name="headphoneType" 
+                value="none"
+                bind:group={headphoneType}
+                class="radio"
+              >
+              <span>No headphones</span>
+            </label>
+          </div>
+        </div>
       </div>
+  
+      <button 
+        on:click={startDemo} 
+        class="btn btn-primary mt-4"
+      >
+        Continue to Demo
+      </button>
+    </div>
   {/if}
 
   {#if currentStage === 'demo'}
@@ -258,7 +313,7 @@
           <li>It will take around 10-15 minutes to complete. There will be a progress bar at the top so you can see how much more you have left. We do not save intermediate progress, so please complete the experiment in one sitting.</li>
           <li>There is no right or wrong answer. Please answer the question truthfully how you perceive the sounds.</li>
         </ul>
-        <p class="mb-4">Below you can see how the audio files you will listen to will be presented in the experiment. Please click the buttons to listen. Once you have done this, you can decide whether they sound the same or different.</p>
+        <p class="mb-4">Below you can see how the audio files you will listen to will be presented in the experiment. Please click the buttons to listen. Once you have done this, you can decide whether they sound the same or different. Please use this time to adjust the volume of your device, start low and increase the volume to a level that is comfortable to listen to.</p>
           <div class="demo-container">
               <div class="audio-players">
                   <div class="audio-player">

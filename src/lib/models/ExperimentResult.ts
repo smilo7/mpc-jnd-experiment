@@ -1,7 +1,10 @@
 import mongoose, { Document, Model } from 'mongoose';
 
+export type HeadphoneType = 'over-ear' | 'in-ear' | 'none';
+
 export interface IExperimentResult extends Document {
   participantName: string;
+  headphoneType: HeadphoneType;
   audioComparisons: Array<{
     audioFile1: string;
     audioFile2: string;
@@ -15,6 +18,11 @@ export interface IExperimentResult extends Document {
 
 const ExperimentResultSchema = new mongoose.Schema<IExperimentResult>({
   participantName: { type: String, required: true },
+  headphoneType: { 
+    type: String, 
+    required: true,
+    enum: ['over-ear', 'in-ear', 'none']
+  },
   audioComparisons: [
     {
       audioFile1: { type: String, required: true },
