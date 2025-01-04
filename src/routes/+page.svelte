@@ -60,8 +60,8 @@
           alert('Please enter your name');
           return;
       }
-      console.log("test case")
-      submitResultsTest(); // test db write
+    //   console.log("test case")
+    //   submitResultsTest(); // test db write
 
       audioFiles = await loadAudioFiles();
       const audioPairs = createAudioPairs(audioFiles);
@@ -155,30 +155,30 @@
       }
   }
 
-  async function submitResultsTest() {
-      const testName = "TestParticipant"
-      try {
-          const response = await fetch('/api/experiment-result', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                  participantName: testName,
-                  audioComparisons: experimentResults
-              })
-          });
+//   async function submitResultsTest() {
+//       const testName = "TestParticipant"
+//       try {
+//           const response = await fetch('/api/experiment-result', {
+//               method: 'POST',
+//               headers: {
+//                   'Content-Type': 'application/json'
+//               },
+//               body: JSON.stringify({
+//                   participantName: testName,
+//                   audioComparisons: experimentResults
+//               })
+//           });
   
-          if (response.ok) {
-              currentStage = 'completed';
-          } else {
-              alert('Failed to submit results');
-          }
-      } catch (error) {
-          console.error('Submission error:', error);
-          alert('Error submitting results');
-      }
-  }
+//           if (response.ok) {
+//               currentStage = 'completed';
+//           } else {
+//               alert('Failed to submit results');
+//           }
+//       } catch (error) {
+//           console.error('Submission error:', error);
+//           alert('Error submitting results');
+//       }
+//   }
 </script>
 
 <main class="container">
