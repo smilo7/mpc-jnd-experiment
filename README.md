@@ -8,6 +8,9 @@ Trombone brightness experiment website: https://mpc-jnd-experiment.vercel.app
 `static/audio`
 - Contains the interpolated range of audio samples
 
+`collected_data`
+- Contains the results from our experiment. These were exported from our MongoDB database.
+
 The rest of the files constitute the experiment website viewable at the link above.
 
 ---
